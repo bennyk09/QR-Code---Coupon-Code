@@ -6,6 +6,21 @@
     <title>QR Code Scanner - View Coupon</title>
 </head>
 <body>
-    <h1>hello</h1>
 </body>
+     <script>
+    // Read URL query parameters
+    const params = new URLSearchParams(window.location.search);
+    const coupon = params.get("coupon");
+
+    if (coupon) {
+        // Create text display
+        let display = document.createElement("h1");
+        display.textContent = "Your Coupon Code: " + coupon;
+        display.style.textAlign = "center";
+        display.style.marginTop = "80px";
+        display.style.fontFamily = "Arial, Helvetica, sans-serif";
+        document.body.appendChild(display);
+    }
+</script>
+
 </html>
