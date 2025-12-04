@@ -9,133 +9,314 @@
   body {
     margin: 0;
     background: #033a5b;
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Arial;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial;
   }
+
   .screen {
     max-width: 430px;
     margin: auto;
-    padding: 20px;
+    padding: 20px 18px 30px;
     min-height: 100vh;
     color: white;
+    box-sizing: border-box;
   }
-  .title {
-    font-size: 22px;
-    font-weight: 600;
-    text-align: center;
+
+  /* Top bar */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 18px;
   }
-  .coupon-card {
-    background: white;
-    border-radius: 20px;
-    padding: 24px;
-    text-align: center;
-    color: #033a5b;
-    margin-bottom: 25px;
+  .top-title {
+    font-size: 20px;
     font-weight: 600;
   }
-  .coupon-card .code {
-    font-size: 28px;
-    font-weight: 700;
-    margin-top: 6px;
-    word-break: break-all;
+
+  /* List (left screenshot style) */
+  .coupon-list {
+    margin-top: 8px;
   }
-  .actions { display: flex; gap: 15px; justify-content: center; }
-  .btn {
-    padding: 14px 22px;
-    border-radius: 28px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    width: 45%;
-    border: none;
-  }
-  .claim { background: #00d18b; color: white; }
-  .leave { background: white; color: #033a5b; }
-  .wallet-title { margin-top: 35px; margin-bottom: 12px; font-size: 18px; font-weight: 600; }
-  .saved-coupon {
-    background: white;
+
+  .ticket-row {
+    background: #ffffff;
     border-radius: 18px;
-    padding: 18px;
+    padding: 14px 16px;
     margin-bottom: 12px;
     color: #033a5b;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
   }
-  .use-btn {
+
+  .ticket-row::before,
+  .ticket-row::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
     background: #033a5b;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 18px;
-    border: none;
-    cursor: pointer;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .ticket-row::before {
+    left: -9px;
+  }
+  .ticket-row::after {
+    right: -9px;
+  }
+
+  .ticket-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ticket-brand {
+    font-size: 14px;
     font-weight: 600;
+    opacity: 0.9;
+  }
+
+  .ticket-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .ticket-valid {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-top: 4px;
+  }
+
+  .ticket-use {
+    background: #033a5b;
+    color: #fff;
+    border-radius: 16px;
+    border: none;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Scan result (right screenshot style) */
+  .detail-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 10px 0 18px;
+    text-align: center;
+  }
+
+  .detail-card {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 22px 22px 26px;
+    color: #033a5b;
+    position: relative;
+  }
+
+  .detail-card::before,
+  .detail-card::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: #033a5b;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .detail-card::before { left: -11px; }
+  .detail-card::after { right: -11px; }
+
+  .detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+
+  .detail-merchant {
+    font-size: 20px;
+    font-weight: 800;
+  }
+
+  .detail-offer {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .detail-body {
+    font-size: 13px;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .detail-bullets {
+    margin: 12px 0 18px;
+    padding-left: 18px;
+    font-size: 12px;
+  }
+
+  .detail-bullets li {
+    margin-bottom: 4px;
+  }
+
+  .detail-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .detail-valid {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-top: 8px;
+  }
+
+  .detail-actions {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  .btn {
+    padding: 12px 20px;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-claim {
+    background: #00d18b;
+    color: #fff;
+  }
+
+  .btn-leave {
+    background: #ffffff;
+    color: #033a5b;
+  }
+
+  .qr-box {
+    margin-top: 6px;
   }
 </style>
 </head>
 <body>
 
 <div class="screen">
+  <div class="top-bar">
+    <div class="top-title">My Coupons</div>
+  </div>
+
   <div id="scanResult"></div>
-  <div id="couponSection"></div>
+  <div id="couponSection" class="coupon-list"></div>
 </div>
 
 <script>
-  const p = new URLSearchParams(window.location.search);
-  const coupon = p.get("coupon");
+  const params = new URLSearchParams(window.location.search);
+  const coupon = params.get("coupon");
 
+  // Very simple mapping: you can extend this to real brands/offers
+  function getCouponMeta(code) {
+    // Example: decide brand/offer based on first letter
+    if (code && code[0] === "P") {
+      return { brand: "Plastic Store", offer: "10% OFF", valid: "Valid until 31 Dec 2025" };
+    } else if (code && code[0] === "M") {
+      return { brand: "McDonalds", offer: "$10", valid: "Valid until 01 Feb 2026" };
+    }
+    return { brand: "Coupon", offer: "Special Offer", valid: "Valid until 31 Dec 2025" };
+  }
+
+  // UI after scan (detail view)
   if (coupon) {
+    const meta = getCouponMeta(coupon);
     document.getElementById("scanResult").innerHTML = `
-      <div class="title">Coupon Detected</div>
-      <div class="coupon-card">
-          <div>New Coupon Added</div>
-          <div class="code">${coupon}</div>
+      <div class="detail-title">Scan Successful</div>
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-merchant">${meta.brand}</div>
+          <div class="detail-offer">${meta.offer}</div>
+        </div>
+        <div class="detail-body">
+          Use this coupon on your next purchase.
+        </div>
+        <ul class="detail-bullets">
+          <li>Redeemable at participating stores.</li>
+          <li>Not valid with other discounts.</li>
+          <li>No cash value.</li>
+        </ul>
+        <div class="detail-bottom">
+          <div class="qr-box">
+            <!-- Placeholder QR image; you can replace with real QR canvas if needed -->
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(location.href)}" alt="QR">
+          </div>
+          <div class="detail-valid">${meta.valid}</div>
+        </div>
       </div>
-      <div class="actions">
-        <button class="btn claim" onclick="saveCoupon('${coupon}')">CLAIM</button>
-        <button class="btn leave" onclick="window.location.href = '${location.pathname}'">LEAVE</button>
+      <div class="detail-actions">
+        <button class="btn btn-claim" onclick="saveCoupon('${coupon}')">CLAIM</button>
+        <button class="btn btn-leave" onclick="window.location.href='${location.pathname}'">LEAVE</button>
       </div>
     `;
   }
 
+  // Save coupon
   function saveCoupon(code) {
     let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
     if (!saved.includes(code)) {
       saved.push(code);
       localStorage.setItem("claimedCoupons", JSON.stringify(saved));
     }
+    showCoupons();
     alert("Coupon added to Wallet!");
     document.getElementById("scanResult").innerHTML = "";
-    showCoupons();
   }
 
+  // Show Wallet coupons (list view)
   function showCoupons() {
     let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
-    let sec = document.getElementById("couponSection");
-    if (!saved.length) {
-      sec.innerHTML = "";
+    let s = document.getElementById("couponSection");
+
+    if (saved.length === 0) {
+      s.innerHTML = "";
       return;
     }
-    sec.innerHTML = `<div class="wallet-title">Saved Coupons</div>`;
-    saved.forEach((c, i) => {
-      sec.innerHTML += `
-        <div class="saved-coupon">
-          <span>${c}</span>
-          <button class="use-btn" onclick="useCoupon(${i})">USE</button>
+
+    s.innerHTML = "";
+    saved.forEach((code, index) => {
+      const meta = getCouponMeta(code);
+      s.innerHTML += `
+        <div class="ticket-row">
+          <div class="ticket-main">
+            <div class="ticket-title">${meta.offer}</div>
+            <div class="ticket-brand">${meta.brand}</div>
+            <div class="ticket-valid">${meta.valid}</div>
+          </div>
+          <button class="ticket-use" onclick="useCoupon(${index})">USE</button>
         </div>
       `;
     });
   }
 
-  function useCoupon(index) {
+  // Remove coupon when used
+  function useCoupon(i) {
     let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
-    saved.splice(index, 1);
+    saved.splice(i, 1);
     localStorage.setItem("claimedCoupons", JSON.stringify(saved));
-    alert("Coupon Used!");
     showCoupons();
+    alert("Coupon Used!");
   }
 
   showCoupons();
 </script>
+
 </body>
 </html>
