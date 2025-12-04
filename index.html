@@ -1,109 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner - View Coupon</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Coupon Wallet</title>
+
+<style>
+  body {
+    margin: 0;
+    background: #033a5b;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Arial;
+  }
+  .screen {
+    max-width: 430px;
+    margin: auto;
+    padding: 20px;
+    min-height: 100vh;
+    color: white;
+  }
+  .title {
+    font-size: 22px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .coupon-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    color: #033a5b;
+    margin-bottom: 25px;
+    font-weight: 600;
+  }
+  .coupon-card .code {
+    font-size: 28px;
+    font-weight: 700;
+    margin-top: 6px;
+    word-break: break-all;
+  }
+  .actions { display: flex; gap: 15px; justify-content: center; }
+  .btn {
+    padding: 14px 22px;
+    border-radius: 28px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 45%;
+    border: none;
+  }
+  .claim { background: #00d18b; color: white; }
+  .leave { background: white; color: #033a5b; }
+  .wallet-title { margin-top: 35px; margin-bottom: 12px; font-size: 18px; font-weight: 600; }
+  .saved-coupon {
+    background: white;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 12px;
+    color: #033a5b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .use-btn {
+    background: #033a5b;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 18px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+  }
+</style>
 </head>
 <body>
-</body><script>
-    const params = new URLSearchParams(window.location.search);
-    const coupon = params.get("coupon");
 
-    // Display coupon if exists in URL
-    if (coupon) {
-        let display = document.createElement("h1");
-        display.textContent = "Your Coupon Code: " + coupon;
-        display.style.textAlign = "center";
-        display.style.marginTop = "40px";
-        display.style.fontFamily = "Arial, Helvetica, sans-serif";
-        document.body.appendChild(display);
+<div class="screen">
+  <div id="scanResult"></div>
+  <div id="couponSection"></div>
+</div>
 
-        // Claim button
-        let claimBtn = document.createElement("button");
-        claimBtn.textContent = "CLAIM";
-        claimBtn.style.display = "block";
-        claimBtn.style.margin = "20px auto";
-        claimBtn.style.padding = "10px 30px";
-        claimBtn.style.fontSize = "18px";
-        claimBtn.onclick = () => saveCoupon(coupon);
-        document.body.appendChild(claimBtn);
+<script>
+  const p = new URLSearchParams(window.location.search);
+  const coupon = p.get("coupon");
 
-        // Leave button
-        let leaveBtn = document.createElement("button");
-        leaveBtn.textContent = "LEAVE";
-        leaveBtn.style.display = "block";
-        leaveBtn.style.margin = "10px auto";
-        leaveBtn.style.padding = "10px 30px";
-        leaveBtn.style.fontSize = "18px";
-        leaveBtn.onclick = () => window.location.href = location.origin + location.pathname;
-        document.body.appendChild(leaveBtn);
+  if (coupon) {
+    document.getElementById("scanResult").innerHTML = `
+      <div class="title">Coupon Detected</div>
+      <div class="coupon-card">
+          <div>New Coupon Added</div>
+          <div class="code">${coupon}</div>
+      </div>
+      <div class="actions">
+        <button class="btn claim" onclick="saveCoupon('${coupon}')">CLAIM</button>
+        <button class="btn leave" onclick="window.location.href = '${location.pathname}'">LEAVE</button>
+      </div>
+    `;
+  }
+
+  function saveCoupon(code) {
+    let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
+    if (!saved.includes(code)) {
+      saved.push(code);
+      localStorage.setItem("claimedCoupons", JSON.stringify(saved));
     }
-
-    // Function to save coupon
-    function saveCoupon(code) {
-        let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
-        if (!saved.includes(code)) {
-            saved.push(code);
-            localStorage.setItem("claimedCoupons", JSON.stringify(saved));
-        }
-        showCoupons();
-        alert("Coupon claimed!");
-    }
-
-    // Show claimed coupons
-    function showCoupons() {
-        let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
-
-        // Create container if not exists
-        let section = document.getElementById("couponSection");
-        if (!section) {
-            section = document.createElement("div");
-            section.id = "couponSection";
-            section.style.textAlign = "center";
-            section.style.marginTop = "60px";
-            document.body.appendChild(section);
-        }
-
-        // Update view
-        section.innerHTML = "<h2>Saved Coupons</h2>";
-        if (saved.length === 0) {
-            section.innerHTML += "<p>No coupons saved</p>";
-            return;
-        }
-
-        saved.forEach((code, index) => {
-            let row = document.createElement("div");
-            row.style.margin = "10px";
-
-            let text = document.createElement("span");
-            text.textContent = code;
-            text.style.fontSize = "20px";
-            text.style.marginRight = "20px";
-            row.appendChild(text);
-
-            let useBtn = document.createElement("button");
-            useBtn.textContent = "USE";
-            useBtn.style.padding = "5px 15px";
-            useBtn.onclick = () => useCoupon(index);
-            row.appendChild(useBtn);
-
-            section.appendChild(row);
-        });
-    }
-
-    // Use (remove) a coupon
-    function useCoupon(index) {
-        let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
-        saved.splice(index, 1);
-        localStorage.setItem("claimedCoupons", JSON.stringify(saved));
-        showCoupons();
-        alert("Coupon used!");
-    }
-
-    // Always show saved coupons section
+    alert("Coupon added to Wallet!");
+    document.getElementById("scanResult").innerHTML = "";
     showCoupons();
+  }
+
+  function showCoupons() {
+    let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
+    let sec = document.getElementById("couponSection");
+    if (!saved.length) {
+      sec.innerHTML = "";
+      return;
+    }
+    sec.innerHTML = `<div class="wallet-title">Saved Coupons</div>`;
+    saved.forEach((c, i) => {
+      sec.innerHTML += `
+        <div class="saved-coupon">
+          <span>${c}</span>
+          <button class="use-btn" onclick="useCoupon(${i})">USE</button>
+        </div>
+      `;
+    });
+  }
+
+  function useCoupon(index) {
+    let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
+    saved.splice(index, 1);
+    localStorage.setItem("claimedCoupons", JSON.stringify(saved));
+    alert("Coupon Used!");
+    showCoupons();
+  }
+
+  showCoupons();
 </script>
-
-
+</body>
 </html>
