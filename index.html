@@ -10,12 +10,17 @@
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
+            background: #f8fff8;
         }
         #resultBox {
             margin-top: 20px;
-            font-size: 35px;
+            font-size: 50px;
             font-weight: bold;
-            color: green;
+            color: #16a34a;
+            background: #d1ffd8;
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 12px;
         }
         #couponList {
             margin-top: 30px;
@@ -23,30 +28,31 @@
             color: #222;
         }
         .coupon {
-            padding: 10px;
-            font-size: 22px;
+            padding: 12px;
+            font-size: 24px;
             background: #d7ffd7;
             margin: 8px auto;
-            width: 200px;
+            width: 230px;
             border-radius: 8px;
         }
         video {
             width: 330px;
             border-radius: 8px;
             margin-top: 20px;
+            border: 3px solid #16a34a;
         }
     </style>
 </head>
 <body>
 
-    <h1>Scan QR to Claim Coupon</h1>
-    <p>Point the camera at the QR code.</p>
+    <h1>Scan QR Code to Claim Coupon</h1>
+    <p>Point the camera at the QR code</p>
 
     <video id="preview"></video>
 
-    <div id="resultBox"></div>
+    <div id="resultBox" style="display:none;"></div>
 
-    <h2>Saved Coupons</h2>
+    <h2>Previously Claimed Coupons</h2>
     <div id="couponList">No coupons yet</div>
 
     <!-- QR Scanner Library -->
@@ -70,12 +76,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Start Camera Scanner
+        // Start camera
         let scanner = new Instascan.Scanner({ video: document.getElementById("preview") });
         scanner.addListener("scan", function (content) {
-            document.getElementById("resultBox").innerText = "Scanned Code: " + content;
+            // Show 6 digit coupon on screen
+            document.getElementById("resultBox").style.display = "block";
+            document.getElementById("resultBox").innerText = content;
 
-            // Save scanned coupon to Firebase
+            // Save to Firebase
             push(ref(db, "claimedCoupons"), {
                 coupon: content,
                 claimedAt: Date.now()
@@ -86,11 +94,11 @@
             if (cameras.length > 0) {
                 scanner.start(cameras[0]);
             } else {
-                alert("No camera found.");
+                alert("No camera found");
             }
         });
 
-        // Load saved coupons from Firebase
+        // Load claimed coupons
         onValue(ref(db, "claimedCoupons"), (snapshot) => {
             const output = document.getElementById("couponList");
             output.innerHTML = "";
