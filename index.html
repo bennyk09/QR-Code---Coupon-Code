@@ -1,322 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Coupon Wallet</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim QR Coupon</title>
 
-<style>
-  body {
-    margin: 0;
-    background: #033a5b;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial;
-  }
-
-  .screen {
-    max-width: 430px;
-    margin: auto;
-    padding: 20px 18px 30px;
-    min-height: 100vh;
-    color: white;
-    box-sizing: border-box;
-  }
-
-  /* Top bar */
-  .top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-  }
-  .top-title {
-    font-size: 20px;
-    font-weight: 600;
-  }
-
-  /* List (left screenshot style) */
-  .coupon-list {
-    margin-top: 8px;
-  }
-
-  .ticket-row {
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 14px 16px;
-    margin-bottom: 12px;
-    color: #033a5b;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-  }
-
-  .ticket-row::before,
-  .ticket-row::after {
-    content: "";
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: #033a5b;
-    border-radius: 50%;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .ticket-row::before {
-    left: -9px;
-  }
-  .ticket-row::after {
-    right: -9px;
-  }
-
-  .ticket-main {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .ticket-brand {
-    font-size: 14px;
-    font-weight: 600;
-    opacity: 0.9;
-  }
-
-  .ticket-title {
-    font-size: 16px;
-    font-weight: 700;
-  }
-
-  .ticket-valid {
-    font-size: 11px;
-    opacity: 0.6;
-    margin-top: 4px;
-  }
-
-  .ticket-use {
-    background: #033a5b;
-    color: #fff;
-    border-radius: 16px;
-    border: none;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  /* Scan result (right screenshot style) */
-  .detail-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 10px 0 18px;
-    text-align: center;
-  }
-
-  .detail-card {
-    background: #ffffff;
-    border-radius: 22px;
-    padding: 22px 22px 26px;
-    color: #033a5b;
-    position: relative;
-  }
-
-  .detail-card::before,
-  .detail-card::after {
-    content: "";
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    background: #033a5b;
-    border-radius: 50%;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .detail-card::before { left: -11px; }
-  .detail-card::after { right: -11px; }
-
-  .detail-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 10px;
-  }
-
-  .detail-merchant {
-    font-size: 20px;
-    font-weight: 800;
-  }
-
-  .detail-offer {
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .detail-body {
-    font-size: 13px;
-    margin-top: 6px;
-    line-height: 1.4;
-  }
-
-  .detail-bullets {
-    margin: 12px 0 18px;
-    padding-left: 18px;
-    font-size: 12px;
-  }
-
-  .detail-bullets li {
-    margin-bottom: 4px;
-  }
-
-  .detail-bottom {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 8px;
-  }
-
-  .detail-valid {
-    font-size: 11px;
-    opacity: 0.6;
-    margin-top: 8px;
-  }
-
-  .detail-actions {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin-top: 18px;
-  }
-
-  .btn {
-    padding: 12px 20px;
-    border-radius: 24px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-  }
-
-  .btn-claim {
-    background: #00d18b;
-    color: #fff;
-  }
-
-  .btn-leave {
-    background: #ffffff;
-    color: #033a5b;
-  }
-
-  .qr-box {
-    margin-top: 6px;
-  }
-</style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #resultBox {
+            margin-top: 20px;
+            font-size: 35px;
+            font-weight: bold;
+            color: green;
+        }
+        #couponList {
+            margin-top: 30px;
+            font-size: 20px;
+            color: #222;
+        }
+        .coupon {
+            padding: 10px;
+            font-size: 22px;
+            background: #d7ffd7;
+            margin: 8px auto;
+            width: 200px;
+            border-radius: 8px;
+        }
+        video {
+            width: 330px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="screen">
-  <div class="top-bar">
-    <div class="top-title">My Coupons</div>
-  </div>
+    <h1>Scan QR to Claim Coupon</h1>
+    <p>Point the camera at the QR code.</p>
 
-  <div id="scanResult"></div>
-  <div id="couponSection" class="coupon-list"></div>
-</div>
+    <video id="preview"></video>
 
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const coupon = params.get("coupon");
+    <div id="resultBox"></div>
 
-  // Very simple mapping: you can extend this to real brands/offers
-  function getCouponMeta(code) {
-    // Example: decide brand/offer based on first letter
-    if (code && code[0] === "P") {
-      return { brand: "Plastic Store", offer: "10% OFF", valid: "Valid until 31 Dec 2025" };
-    } else if (code && code[0] === "M") {
-      return { brand: "McDonalds", offer: "$10", valid: "Valid until 01 Feb 2026" };
-    }
-    return { brand: "Coupon", offer: "Special Offer", valid: "Valid until 31 Dec 2025" };
-  }
+    <h2>Saved Coupons</h2>
+    <div id="couponList">No coupons yet</div>
 
-  // UI after scan (detail view)
-  if (coupon) {
-    const meta = getCouponMeta(coupon);
-    document.getElementById("scanResult").innerHTML = `
-      <div class="detail-title">Scan Successful</div>
-      <div class="detail-card">
-        <div class="detail-header">
-          <div class="detail-merchant">${meta.brand}</div>
-          <div class="detail-offer">${meta.offer}</div>
-        </div>
-        <div class="detail-body">
-          Use this coupon on your next purchase.
-        </div>
-        <ul class="detail-bullets">
-          <li>Redeemable at participating stores.</li>
-          <li>Not valid with other discounts.</li>
-          <li>No cash value.</li>
-        </ul>
-        <div class="detail-bottom">
-          <div class="qr-box">
-            <!-- Placeholder QR image; you can replace with real QR canvas if needed -->
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(location.href)}" alt="QR">
-          </div>
-          <div class="detail-valid">${meta.valid}</div>
-        </div>
-      </div>
-      <div class="detail-actions">
-        <button class="btn btn-claim" onclick="saveCoupon('${coupon}')">CLAIM</button>
-        <button class="btn btn-leave" onclick="window.location.href='${location.pathname}'">LEAVE</button>
-      </div>
-    `;
-  }
+    <!-- QR Scanner Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
 
-  // Save coupon
-  function saveCoupon(code) {
-    let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
-    if (!saved.includes(code)) {
-      saved.push(code);
-      localStorage.setItem("claimedCoupons", JSON.stringify(saved));
-    }
-    showCoupons();
-    alert("Coupon added to Wallet!");
-    document.getElementById("scanResult").innerHTML = "";
-  }
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-  // Show Wallet coupons (list view)
-  function showCoupons() {
-    let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
-    let s = document.getElementById("couponSection");
+        const firebaseConfig = {
+            apiKey: "AIzaSyBfi7yD9ezQkmsthyUQvPhe_7SpmLOZ9XY",
+            authDomain: "qr-code---coupon-code.firebaseapp.com",
+            databaseURL: "https://qr-code---coupon-code-default-rtdb.firebaseio.com",
+            projectId: "qr-code---coupon-code",
+            storageBucket: "qr-code---coupon-code.firebasestorage.app",
+            messagingSenderId: "219599248612",
+            appId: "1:219599248612:web:9b6f8d37eca0526f92a0f1"
+        };
 
-    if (saved.length === 0) {
-      s.innerHTML = "";
-      return;
-    }
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-    s.innerHTML = "";
-    saved.forEach((code, index) => {
-      const meta = getCouponMeta(code);
-      s.innerHTML += `
-        <div class="ticket-row">
-          <div class="ticket-main">
-            <div class="ticket-title">${meta.offer}</div>
-            <div class="ticket-brand">${meta.brand}</div>
-            <div class="ticket-valid">${meta.valid}</div>
-          </div>
-          <button class="ticket-use" onclick="useCoupon(${index})">USE</button>
-        </div>
-      `;
-    });
-  }
+        // Start Camera Scanner
+        let scanner = new Instascan.Scanner({ video: document.getElementById("preview") });
+        scanner.addListener("scan", function (content) {
+            document.getElementById("resultBox").innerText = "Scanned Code: " + content;
 
-  // Remove coupon when used
-  function useCoupon(i) {
-    let saved = JSON.parse(localStorage.getItem("claimedCoupons") || "[]");
-    saved.splice(i, 1);
-    localStorage.setItem("claimedCoupons", JSON.stringify(saved));
-    showCoupons();
-    alert("Coupon Used!");
-  }
+            // Save scanned coupon to Firebase
+            push(ref(db, "claimedCoupons"), {
+                coupon: content,
+                claimedAt: Date.now()
+            });
+        });
 
-  showCoupons();
-</script>
+        Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 0) {
+                scanner.start(cameras[0]);
+            } else {
+                alert("No camera found.");
+            }
+        });
+
+        // Load saved coupons from Firebase
+        onValue(ref(db, "claimedCoupons"), (snapshot) => {
+            const output = document.getElementById("couponList");
+            output.innerHTML = "";
+
+            if (!snapshot.exists()) {
+                output.innerText = "No coupons yet";
+                return;
+            }
+
+            snapshot.forEach(child => {
+                let data = child.val();
+                let div = document.createElement("div");
+                div.classList.add("coupon");
+                div.innerText = data.coupon;
+                output.appendChild(div);
+            });
+        });
+    </script>
 
 </body>
 </html>
