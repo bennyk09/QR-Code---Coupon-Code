@@ -8,114 +8,55 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: #ffffff;
             text-align: center;
-            padding: 20px;
-            background: #f8fff8;
         }
-        #resultBox {
-            margin-top: 20px;
-            font-size: 50px;
+        #couponBox {
+            font-size: 48px;
             font-weight: bold;
-            color: #16a34a;
-            background: #d1ffd8;
-            display: inline-block;
-            padding: 15px 30px;
-            border-radius: 12px;
-        }
-        #couponList {
-            margin-top: 30px;
-            font-size: 20px;
-            color: #222;
-        }
-        .coupon {
-            padding: 12px;
-            font-size: 24px;
-            background: #d7ffd7;
-            margin: 8px auto;
-            width: 230px;
-            border-radius: 8px;
-        }
-        video {
-            width: 330px;
-            border-radius: 8px;
+            color: green;
             margin-top: 20px;
-            border: 3px solid #16a34a;
+        }
+        #msg {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .btn {
+            margin-top: 24px;
+            padding: 12px 22px;
+            font-size: 18px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <h1>Scan QR Code to Claim Coupon</h1>
-    <p>Point the camera at the QR code</p>
+    <h1>Coupon Successfully Scanned 🎉</h1>
+    <p id="msg">Your Coupon Code:</p>
+    <div id="couponBox"></div>
 
-    <video id="preview"></video>
+    <button class="btn" onclick="window.location.reload()">Scan Again</button>
 
-    <div id="resultBox" style="display:none;"></div>
+    <script>
+        // Read ?code=XXXXXX from URL
+        const params = new URLSearchParams(window.location.search);
+        const coupon = params.get("code");
 
-    <h2>Previously Claimed Coupons</h2>
-    <div id="couponList">No coupons yet</div>
-
-    <!-- QR Scanner Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
-
-    <!-- Firebase -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBfi7yD9ezQkmsthyUQvPhe_7SpmLOZ9XY",
-            authDomain: "qr-code---coupon-code.firebaseapp.com",
-            databaseURL: "https://qr-code---coupon-code-default-rtdb.firebaseio.com",
-            projectId: "qr-code---coupon-code",
-            storageBucket: "qr-code---coupon-code.firebasestorage.app",
-            messagingSenderId: "219599248612",
-            appId: "1:219599248612:web:9b6f8d37eca0526f92a0f1"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // Start camera
-        let scanner = new Instascan.Scanner({ video: document.getElementById("preview") });
-        scanner.addListener("scan", function (content) {
-            // Show 6 digit coupon on screen
-            document.getElementById("resultBox").style.display = "block";
-            document.getElementById("resultBox").innerText = content;
-
-            // Save to Firebase
-            push(ref(db, "claimedCoupons"), {
-                coupon: content,
-                claimedAt: Date.now()
-            });
-        });
-
-        Instascan.Camera.getCameras().then(function (cameras) {
-            if (cameras.length > 0) {
-                scanner.start(cameras[0]);
-            } else {
-                alert("No camera found");
-            }
-        });
-
-        // Load claimed coupons
-        onValue(ref(db, "claimedCoupons"), (snapshot) => {
-            const output = document.getElementById("couponList");
-            output.innerHTML = "";
-
-            if (!snapshot.exists()) {
-                output.innerText = "No coupons yet";
-                return;
-            }
-
-            snapshot.forEach(child => {
-                let data = child.val();
-                let div = document.createElement("div");
-                div.classList.add("coupon");
-                div.innerText = data.coupon;
-                output.appendChild(div);
-            });
-        });
+        if (coupon) {
+            document.getElementById("couponBox").innerText = coupon;
+        } else {
+            document.getElementById("msg").innerText = "❌ Invalid or missing coupon code!";
+        }
     </script>
 
 </body>
