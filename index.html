@@ -8,54 +8,114 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            height: 100vh;
-            margin: 0;
+            background: #fff0f5;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            background: #ffffff;
-            text-align: center;
+            height: 100vh;
+            margin: 0;
         }
-        #couponBox {
-            font-size: 48px;
-            font-weight: bold;
-            color: green;
-            margin-top: 20px;
-        }
-        #msg {
-            font-size: 22px;
-            font-weight: bold;
-        }
-        .btn {
-            margin-top: 24px;
-            padding: 12px 22px;
-            font-size: 18px;
-            background: #007bff;
+
+        .coupon-card {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            width: 280px;
+            padding: 20px;
+            border-radius: 12px;
             color: white;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .coupon-card h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .coupon-code {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .toggle-btn, .save-btn {
+            margin-top: 15px;
+            padding: 10px 18px;
+            font-size: 16px;
             border: none;
-            border-radius: 6px;
+            border-radius: 20px;
             cursor: pointer;
+        }
+
+        .toggle-btn {
+            background: #ffffff;
+            color: #ff4b2b;
+            font-weight: bold;
+        }
+
+        .save-btn {
+            background: #ffd700;
+            color: #333;
+            font-weight: bold;
+        }
+
+        #qrBox {
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Coupon Successfully Scanned 🎉</h1>
-    <p id="msg">Your Coupon Code:</p>
-    <div id="couponBox"></div>
+    <div class="coupon-card">
+        <h2>CHRISTMAS SALE</h2>
+        <p>25% OFF</p>
 
-    <button class="btn" onclick="window.location.reload()">Scan Again</button>
+        <div id="couponBox" class="coupon-code"></div>
+        <button class="toggle-btn" onclick="toggleCode()">Show Code</button>
+
+        <div id="qrBox"></div>
+
+        <button class="save-btn" onclick="saveCoupon()">Save It!</button>
+    </div>
+
+    <!-- QR Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
-        // Read ?code=XXXXXX from URL
         const params = new URLSearchParams(window.location.search);
         const coupon = params.get("code");
 
+        const couponBox = document.getElementById("couponBox");
+        const toggleBtn = document.querySelector(".toggle-btn");
+
+        // Set QR Code
+        const qrBox = document.getElementById("qrBox");
         if (coupon) {
-            document.getElementById("couponBox").innerText = coupon;
+            couponBox.innerText = coupon;
+            new QRCode(qrBox, {
+                text: window.location.href,
+                width: 150,
+                height: 150
+            });
         } else {
-            document.getElementById("msg").innerText = "❌ Invalid or missing coupon code!";
+            couponBox.innerText = "❌ Invalid code!";
+        }
+
+        function toggleCode() {
+            if (couponBox.style.display === "none") {
+                couponBox.style.display = "block";
+                toggleBtn.innerText = "Hide Code";
+            } else {
+                couponBox.style.display = "none";
+                toggleBtn.innerText = "Show Code";
+            }
+        }
+
+        function saveCoupon() {
+            alert("Coupon saved! 🎉");
         }
     </script>
 
