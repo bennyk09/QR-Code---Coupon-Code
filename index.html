@@ -3,167 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Coupon Code</title>
+    <title>Coupon Code</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            text-align: center;
-            padding: 20px;
+            background: #f5f5f5;
         }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            max-width: 500px;
-            width: 100%;
-        }
-        .coupon-code {
-            font-size: 64px;
+        #coupon {
+            font-size: 58px;
             font-weight: bold;
-            color: #e74c3c;
-            margin: 30px 0;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 15px;
-            border: 3px dashed #e74c3c;
             letter-spacing: 5px;
-            font-family: 'Courier New', monospace;
-        }
-        .title {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            color: #666;
-            font-size: 18px;
-            margin-bottom: 30px;
-        }
-        .instructions {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 30px;
-            font-size: 14px;
-            color: #555;
-        }
-        .valid-until {
-            color: #27ae60;
-            font-weight: bold;
-            font-size: 16px;
+            color: #007bff;
             margin-top: 20px;
+            display: none;
         }
-        .generated-time {
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-        .back-button {
-            margin-top: 30px;
-            padding: 12px 30px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .back-button:hover {
-            background: #2980b9;
-        }
-        .error {
-            color: #e74c3c;
-            padding: 20px;
-            background: #ffe6e6;
-            border-radius: 10px;
-            border: 2px solid #e74c3c;
+        #msg {
+            font-size: 28px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="title">🎉 Your Coupon Code</h1>
-        <p class="subtitle">Use this code at checkout to redeem your discount</p>
-        
-        <div id="codeDisplay" class="coupon-code">
-            <!-- Code will appear here -->
-        </div>
-        
-        <div id="errorDisplay" class="error" style="display: none;"></div>
-        
-        <div class="valid-until" id="validUntil"></div>
-        <div class="generated-time" id="generatedTime"></div>
-        
-        <div class="instructions">
-            <p><strong>How to use:</strong></p>
-            <p>1. Copy the code above</p>
-            <p>2. Go to checkout page</p>
-            <p>3. Paste in the coupon code field</p>
-            <p>4. Click "Apply Coupon"</p>
-        </div>
-        
-        <a href="https://bennyk09.github.io/QR-Code---Coupon-Code/" class="back-button">
-            ← Generate Another Code
-        </a>
-    </div>
+
+    <div id="msg">Fetching Coupon...</div>
+    <div id="coupon"></div>
 
     <script>
-        // Get the coupon code from URL parameters
+        // Get "?code=123456" from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const couponCode = urlParams.get('code');
-        
-        const codeDisplay = document.getElementById('codeDisplay');
-        const errorDisplay = document.getElementById('errorDisplay');
-        const validUntil = document.getElementById('validUntil');
-        const generatedTime = document.getElementById('generatedTime');
-        
-        if (couponCode && couponCode.length === 6 && !isNaN(couponCode)) {
-            // Valid 6-digit code
-            codeDisplay.textContent = couponCode;
-            
-            // Format the code with spaces for readability
-            const formattedCode = couponCode.match(/.{1,2}/g).join(' ');
-            codeDisplay.textContent = formattedCode;
-            
-            // Calculate expiry time (20 seconds from page load for demo)
-            // In real app, you'd fetch the actual expiry from Firebase
-            const now = new Date();
-            const expiryTime = new Date(now.getTime() + 20000); // 20 seconds
-            
-            validUntil.textContent = `Valid until: ${expiryTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            generatedTime.textContent = `Generated: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            
-            // Countdown timer for the display page
-            let timeLeft = 20;
-            const countdown = setInterval(() => {
-                timeLeft--;
-                validUntil.textContent = `Expires in: ${timeLeft} seconds`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    validUntil.textContent = "⏰ Code expired";
-                    validUntil.style.color = "#e74c3c";
-                    codeDisplay.style.opacity = "0.5";
-                    codeDisplay.style.textDecoration = "line-through";
-                }
-            }, 1000);
-            
+        const code = urlParams.get("code");
+
+        if (code) {
+            document.getElementById("msg").innerText = "Your Coupon Code";
+            document.getElementById("coupon").innerText = code;
+            document.getElementById("coupon").style.display = "block";
         } else {
-            // No valid code found
-            codeDisplay.style.display = "none";
-            errorDisplay.style.display = "block";
-            errorDisplay.textContent = "Invalid or expired coupon code. Please scan a valid QR code.";
+            document.getElementById("msg").innerText = "Invalid QR Code";
         }
     </script>
+
 </body>
 </html>
