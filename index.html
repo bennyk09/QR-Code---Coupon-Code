@@ -1,155 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Coupon Code</title>
-
+  <title>Claim Code</title>
   <style>
-    body {
-      font-family: system-ui, Arial;
-      text-align: center;
-      padding: 40px;
-      background: #f4f5f7;
+    body { font-family: Arial; text-align:center; padding:40px; }
+    #code { font-size:45px; font-weight:700; margin:15px 0; letter-spacing:6px; }
+    button { 
+      padding:12px 20px; 
+      font-size:18px; 
+      border-radius:10px; 
+      background:#4f46e5; 
+      border:none; 
+      color:white; 
+      cursor:pointer; 
     }
-    #codeBox {
-      font-size: 45px;
-      font-weight: 800;
-      margin-top: 10px;
-      letter-spacing: 6px;
-    }
-    #pointsBox {
-      font-size: 32px;
-      font-weight: 600;
-      margin-top: 20px;
-      color: #4f46e5;
-    }
-    #balanceBox {
-      margin-top: 25px;
-      font-size: 30px;
-      font-weight: 700;
-      color: #0c8b34;
-    }
-    button {
-      margin-top: 25px;
-      padding: 12px 25px;
-      font-size: 18px;
-      border: none;
-      border-radius: 10px;
-      background: #4f46e5;
-      color: white;
-      cursor: pointer;
-    }
+    .success { color:green; font-size:22px; margin-top:10px; }
+    .used { color:red; font-size:22px; margin-top:10px; }
   </style>
 </head>
 <body>
 
-  <h2>Your Coupon Code</h2>
-  <div id="codeBox">------</div>
+  <h2>QR Code Claim</h2>
+  <div id="code">------</div>
 
-  <h3>Reward for this Scan</h3>
-  <div id="pointsBox">Loading...</div>
+  <div id="status"></div>
 
-  <h3>Your Total Balance</h3>
-  <div id="balanceBox">Loading...</div>
-
-  <button id="saveBtn">Save to Balance</button>
-
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <button id="claimBtn" onclick="claimNow()">Claim</button>
 
   <script>
-    // ---------------------------
-    //  FIREBASE INIT
-    // ---------------------------
-    const firebaseConfig = {
-      apiKey: "AIzaSyBfi7yD9ezQkmsthyUQvPhe_7SpmLOZ9XY",
-      authDomain: "qr-code---coupon-code.firebaseapp.com",
-      databaseURL: "https://qr-code---coupon-code-default-rtdb.firebaseio.com",
-      projectId: "qr-code---coupon-code",
-      storageBucket: "qr-code---coupon-code.firebasestorage.app",
-      messagingSenderId: "219599248612",
-      appId: "1:219599248612:web:9b6f8d37eca0526f92a0f1",
-      measurementId: "G-WL77B912LB"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // ---------------------------
-    //  READ CODE FROM URL
-    // ---------------------------
     const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
+    const code = params.get("c");
 
-    if (code) {
-      document.getElementById("codeBox").textContent = code;
-    } else {
-      document.getElementById("codeBox").textContent = "No Code Found";
+    document.getElementById("code").textContent = code ?? "NO CODE";
+
+    const key = "qr_" + code;
+    const status = localStorage.getItem(key);
+
+    if (!code) {
+      document.getElementById("status").innerHTML = "<div class='used'>Invalid code</div>";
+      document.getElementById("claimBtn").style.display = "none";
     }
 
-    // ---------------------------
-    //  GENERATE REWARD
-    // ---------------------------
-    let reward = 0;
-
-    function generateReward() {
-      const chance = Math.random();
-
-      if (chance < 0.7) {
-        reward = Math.floor(Math.random() * 50) + 1;
-        return reward + " Points 🎉";
-      } else {
-        reward = 0;
-        return "Better luck next time 😢";
-      }
+    if (status === "used") {
+      document.getElementById("status").innerHTML = "<div class='used'>This QR is already claimed ❌</div>";
+      document.getElementById("claimBtn").style.display = "none";
     }
 
-    document.getElementById("pointsBox").textContent = generateReward();
+    function claimNow() {
+      localStorage.setItem(key, "used");
 
-    // ---------------------------
-    //  LOAD USER BALANCE
-    // ---------------------------
-    let currentBalance = 0;
-
-    function loadBalance() {
-      firebase.database().ref("users/" + code).on("value", snapshot => {
-        if (snapshot.exists()) {
-          currentBalance = snapshot.val().balance;
-          document.getElementById("balanceBox").textContent =
-            currentBalance + " Points";
-        } else {
-          currentBalance = 0;
-          document.getElementById("balanceBox").textContent = "0 Points";
-        }
-      });
+      document.getElementById("status").innerHTML = "<div class='success'>Claimed Successfully ✔</div>";
+      document.getElementById("claimBtn").style.display = "none";
     }
-
-    loadBalance();
-
-    // ---------------------------
-    //  SAVE POINTS
-    // ---------------------------
-    document.getElementById("saveBtn").addEventListener("click", function () {
-
-      if (!code) {
-        alert("No code found!");
-        return;
-      }
-
-      if (reward <= 0) {
-        alert("No points to save!");
-        return;
-      }
-
-      const newBalance = currentBalance + reward;
-
-      firebase.database().ref("users/" + code).set({
-        balance: newBalance
-      });
-
-      alert("Points Saved! New Balance: " + newBalance + " points");
-    });
   </script>
 
 </body>
