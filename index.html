@@ -1,57 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>QR Scanner</title>
+  <meta charset="UTF-8">
+  <title>Coupon Code</title>
 
-    <!-- QR Scanner Library -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body {
+      font-family: system-ui, Arial;
+      text-align: center;
+      padding: 50px;
+      background: #f4f5f7;
+    }
+    #codeBox {
+      margin-top: 30px;
+      font-size: 55px;
+      font-weight: 800;
+      letter-spacing: 8px;
+    }
+  </style>
 
-    <style>
-        body {
-            font-family: system-ui, Arial;
-            text-align: center;
-            padding: 20px;
-            background: #f3f4f7;
-        }
-        #reader {
-            width: 300px;
-            margin: auto;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-        }
-        #resultBox {
-            margin-top: 20px;
-            font-size: 40px;
-            font-weight: 700;
-            letter-spacing: 6px;
-        }
-    </style>
 </head>
 <body>
 
-    <h2>Scan QR Code</h2>
+  <h2>Your Coupon Code</h2>
 
-    <div id="reader"></div>
+  <div id="codeBox">------</div>
 
-    <div id="resultBox">------</div>
+  <script>
+    // Read code from URL → ?code=123456
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
 
-    <script>
-        function onScanSuccess(decodedText, decodedResult) {
-            document.getElementById("resultBox").textContent = decodedText;
-
-            // stop scanning after success
-            html5QrcodeScanner.clear();
-        }
-
-        var html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader",
-            { fps: 10, qrbox: 250 }
-        );
-
-        html5QrcodeScanner.render(onScanSuccess);
-    </script>
+    // Display code if available
+    if (code) {
+      document.getElementById("codeBox").textContent = code;
+    } else {
+      document.getElementById("codeBox").textContent = "No Code Found";
+    }
+  </script>
 
 </body>
 </html>
