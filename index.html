@@ -12,10 +12,16 @@
       background: #f4f5f7;
     }
     #codeBox {
-      margin-top: 30px;
+      margin-top: 20px;
       font-size: 55px;
       font-weight: 800;
       letter-spacing: 8px;
+    }
+    #pointsBox {
+      margin-top: 30px;
+      font-size: 32px;
+      font-weight: 600;
+      color: #4f46e5;
     }
   </style>
 
@@ -23,20 +29,39 @@
 <body>
 
   <h2>Your Coupon Code</h2>
-
   <div id="codeBox">------</div>
 
+  <h3>Reward</h3>
+  <div id="pointsBox">...</div>
+
   <script>
-    // Read code from URL → ?code=123456
+    // Read ?code=123456 from URL
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
 
-    // Display code if available
+    // Display coupon code
     if (code) {
       document.getElementById("codeBox").textContent = code;
     } else {
       document.getElementById("codeBox").textContent = "No Code Found";
     }
+
+    // Generate points OR "better luck next time"
+    function generateReward() {
+      const chance = Math.random();
+
+      if (chance < 0.7) {
+        // 70% chance to get points
+        const points = Math.floor(Math.random() * 50) + 1;
+        return points + " Points 🎉";
+      } else {
+        // 30% chance for no reward
+        return "Better luck next time 😢";
+      }
+    }
+
+    // Show reward
+    document.getElementById("pointsBox").textContent = generateReward();
   </script>
 
 </body>
