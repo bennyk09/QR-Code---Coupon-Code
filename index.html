@@ -8,23 +8,32 @@
     body {
       font-family: system-ui, Arial;
       text-align: center;
-      padding: 50px;
+      padding: 40px;
       background: #f4f5f7;
     }
     #codeBox {
-      margin-top: 20px;
-      font-size: 55px;
+      font-size: 45px;
       font-weight: 800;
-      letter-spacing: 8px;
+      margin-top: 15px;
+      letter-spacing: 6px;
     }
     #pointsBox {
-      margin-top: 30px;
       font-size: 32px;
       font-weight: 600;
+      margin-top: 20px;
       color: #4f46e5;
     }
+    button {
+      margin-top: 25px;
+      padding: 12px 25px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background: #4f46e5;
+      color: white;
+      cursor: pointer;
+    }
   </style>
-
 </head>
 <body>
 
@@ -32,36 +41,89 @@
   <div id="codeBox">------</div>
 
   <h3>Reward</h3>
-  <div id="pointsBox">...</div>
+  <div id="pointsBox">Loading...</div>
+
+  <button id="saveBtn">Save to Balance</button>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
   <script>
-    // Read ?code=123456 from URL
+    // -------------------
+    //  FIREBASE INIT
+    // -------------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfi7yD9ezQkmsthyUQvPhe_7SpmLOZ9XY",
+      authDomain: "qr-code---coupon-code.firebaseapp.com",
+      databaseURL: "https://qr-code---coupon-code-default-rtdb.firebaseio.com",
+      projectId: "qr-code---coupon-code",
+      storageBucket: "qr-code---coupon-code.firebasestorage.app",
+      messagingSenderId: "219599248612",
+      appId: "1:219599248612:web:9b6f8d37eca0526f92a0f1",
+      measurementId: "G-WL77B912LB"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // -------------------
+    //  READ CODE FROM URL
+    // -------------------
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
 
-    // Display coupon code
     if (code) {
       document.getElementById("codeBox").textContent = code;
     } else {
       document.getElementById("codeBox").textContent = "No Code Found";
     }
 
-    // Generate points OR "better luck next time"
+    // -------------------
+    //  GENERATE REWARD
+    // -------------------
+    let reward = "";
+
     function generateReward() {
       const chance = Math.random();
 
       if (chance < 0.7) {
-        // 70% chance to get points
-        const points = Math.floor(Math.random() * 50) + 1;
-        return points + " Points 🎉";
+        reward = Math.floor(Math.random() * 50) + 1;
+        return reward + " Points 🎉";
       } else {
-        // 30% chance for no reward
+        reward = 0; // no points
         return "Better luck next time 😢";
       }
     }
 
-    // Show reward
     document.getElementById("pointsBox").textContent = generateReward();
+
+    // -------------------
+    //  SAVE BUTTON CLICK
+    // -------------------
+    document.getElementById("saveBtn").addEventListener("click", function () {
+      if (!code) {
+        alert("No code found!");
+        return;
+      }
+
+      if (reward <= 0) {
+        alert("No points to save!");
+        return;
+      }
+
+      // Save to /users/{code}/balance
+      firebase.database().ref("users/" + code).once("value").then(snapshot => {
+        let currentBalance = snapshot.val()?.balance || 0;
+        let newBalance = currentBalance + reward;
+
+        firebase.database().ref("users/" + code).set({
+          balance: newBalance
+        });
+
+        alert("Saved! New balance: " + newBalance + " points");
+      });
+    });
   </script>
 
 </body>
