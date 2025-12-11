@@ -14,7 +14,7 @@
     #codeBox {
       font-size: 45px;
       font-weight: 800;
-      margin-top: 15px;
+      margin-top: 10px;
       letter-spacing: 6px;
     }
     #pointsBox {
@@ -22,6 +22,12 @@
       font-weight: 600;
       margin-top: 20px;
       color: #4f46e5;
+    }
+    #balanceBox {
+      margin-top: 25px;
+      font-size: 30px;
+      font-weight: 700;
+      color: #0c8b34;
     }
     button {
       margin-top: 25px;
@@ -40,8 +46,11 @@
   <h2>Your Coupon Code</h2>
   <div id="codeBox">------</div>
 
-  <h3>Reward</h3>
+  <h3>Reward for this Scan</h3>
   <div id="pointsBox">Loading...</div>
+
+  <h3>Your Total Balance</h3>
+  <div id="balanceBox">Loading...</div>
 
   <button id="saveBtn">Save to Balance</button>
 
@@ -50,9 +59,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
   <script>
-    // -------------------
+    // ---------------------------
     //  FIREBASE INIT
-    // -------------------
+    // ---------------------------
     const firebaseConfig = {
       apiKey: "AIzaSyBfi7yD9ezQkmsthyUQvPhe_7SpmLOZ9XY",
       authDomain: "qr-code---coupon-code.firebaseapp.com",
@@ -67,9 +76,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // -------------------
+    // ---------------------------
     //  READ CODE FROM URL
-    // -------------------
+    // ---------------------------
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
 
@@ -79,10 +88,10 @@
       document.getElementById("codeBox").textContent = "No Code Found";
     }
 
-    // -------------------
+    // ---------------------------
     //  GENERATE REWARD
-    // -------------------
-    let reward = "";
+    // ---------------------------
+    let reward = 0;
 
     function generateReward() {
       const chance = Math.random();
@@ -91,17 +100,38 @@
         reward = Math.floor(Math.random() * 50) + 1;
         return reward + " Points 🎉";
       } else {
-        reward = 0; // no points
+        reward = 0;
         return "Better luck next time 😢";
       }
     }
 
     document.getElementById("pointsBox").textContent = generateReward();
 
-    // -------------------
-    //  SAVE BUTTON CLICK
-    // -------------------
+    // ---------------------------
+    //  LOAD USER BALANCE
+    // ---------------------------
+    let currentBalance = 0;
+
+    function loadBalance() {
+      firebase.database().ref("users/" + code).on("value", snapshot => {
+        if (snapshot.exists()) {
+          currentBalance = snapshot.val().balance;
+          document.getElementById("balanceBox").textContent =
+            currentBalance + " Points";
+        } else {
+          currentBalance = 0;
+          document.getElementById("balanceBox").textContent = "0 Points";
+        }
+      });
+    }
+
+    loadBalance();
+
+    // ---------------------------
+    //  SAVE POINTS
+    // ---------------------------
     document.getElementById("saveBtn").addEventListener("click", function () {
+
       if (!code) {
         alert("No code found!");
         return;
@@ -112,17 +142,13 @@
         return;
       }
 
-      // Save to /users/{code}/balance
-      firebase.database().ref("users/" + code).once("value").then(snapshot => {
-        let currentBalance = snapshot.val()?.balance || 0;
-        let newBalance = currentBalance + reward;
+      const newBalance = currentBalance + reward;
 
-        firebase.database().ref("users/" + code).set({
-          balance: newBalance
-        });
-
-        alert("Saved! New balance: " + newBalance + " points");
+      firebase.database().ref("users/" + code).set({
+        balance: newBalance
       });
+
+      alert("Points Saved! New Balance: " + newBalance + " points");
     });
   </script>
 
