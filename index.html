@@ -1,56 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Claim Code</title>
+  <meta charset="UTF-8" />
+  <title>QR Coupon Claim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: Arial; text-align:center; padding:40px; }
-    #code { font-size:45px; font-weight:700; margin:15px 0; letter-spacing:6px; }
-    button { 
-      padding:12px 20px; 
-      font-size:18px; 
-      border-radius:10px; 
-      background:#4f46e5; 
-      border:none; 
-      color:white; 
-      cursor:pointer; 
-    }
-    .success { color:green; font-size:22px; margin-top:10px; }
-    .used { color:red; font-size:22px; margin-top:10px; }
+    body { font-family: Arial; text-align:center; padding:40px; background:#f6f7fb; }
+    .card { background:#fff; padding:25px; width:340px; margin:auto; border-radius:14px; box-shadow:0 6px 25px rgba(0,0,0,0.1); }
+    #code { font-size:45px; font-weight:700; letter-spacing:6px; margin-top:10px; }
+    #points { font-size:22px; color:#4f46e5; margin-top:10px; }
+    #balance { margin-top:14px; font-size:20px; color:#0c8b34; font-weight:700; }
+    #status { margin-top:15px; font-size:18px; }
+    button { margin-top:20px; padding:12px 20px; font-size:17px; border:none; border-radius:10px; cursor:pointer; color:white; }
+    #saveBtn { background:#4f46e5; }
+    #newBtn { background:#1d9bf0; margin-left:10px; }
   </style>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-  <h2>QR Code Claim</h2>
-  <div id="code">------</div>
-
-  <div id="status"></div>
-
-  <button id="claimBtn" onclick="claimNow()">Claim</button>
+  <div class="card">
+    <h2>QR Coupon Claim</h2>
+    <div id="code">------</div>
+    <div id="points">Loading reward...</div>
+    <div id="balance">Loading balance...</div>
+    <div id="status"></div>
+    <button id="saveBtn" onclick="saveReward()">Save to Balance</button>
+    <button id="newBtn" onclick="generateNew()">Generate New QR</button>
+  </div>
 
   <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfi7yD9ezQkmsthyUQvPhe_7SpmLOZ9XY",
+      authDomain: "qr-code---coupon-code.firebaseapp.com",
+      databaseURL: "https://qr-code---coupon-code-default-rtdb.firebaseio.com",
+      projectId: "qr-code---coupon-code",
+      storageBucket: "qr-code---coupon-code.firebasestorage.app",
+      messagingSenderId: "219599248612",
+      appId: "1:219599248612:web:9b6f8d37eca0526f92a0f1",
+      measurementId: "G-WL77B912LB"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Get scanned code
     const params = new URLSearchParams(window.location.search);
     const code = params.get("c");
+    document.getElementById("code").textContent = code || "NO CODE";
 
-    document.getElementById("code").textContent = code ?? "NO CODE";
+    const userPath = "users/" + code;
+    const disablePath = "codes/" + code + "/disabled";
 
-    const key = "qr_" + code;
-    const status = localStorage.getItem(key);
+    let reward = 0;
+    let balance = 0;
+    let disabled = false;
 
-    if (!code) {
-      document.getElementById("status").innerHTML = "<div class='used'>Invalid code</div>";
-      document.getElementById("claimBtn").style.display = "none";
+    // Generate reward (0–50 or BLNT)
+    function generateReward() {
+      const roll = Math.random();
+      if (roll < 0.7) {
+        reward = Math.floor(Math.random() * 51);
+        document.getElementById("points").textContent = reward + " Points 🎉";
+      } else {
+        reward = 0;
+        document.getElementById("points").textContent = "Better luck next time 😢";
+      }
     }
 
-    if (status === "used") {
-      document.getElementById("status").innerHTML = "<div class='used'>This QR is already claimed ❌</div>";
-      document.getElementById("claimBtn").style.display = "none";
+    if (code) generateReward();
+
+    // Read balance & disabled
+    if (code) {
+      db.ref(userPath + "/balance").on("value", snap => {
+        balance = snap.val() || 0;
+        document.getElementById("balance").textContent = "Balance: " + balance;
+      });
+
+      db.ref(disablePath).on("value", snap => {
+        disabled = snap.val() === true;
+        if (disabled) {
+          document.getElementById("status").textContent = "❌ This QR is already claimed.";
+          document.getElementById("saveBtn").disabled = true;
+          document.getElementById("saveBtn").style.opacity = 0.5;
+        }
+      });
     }
 
-    function claimNow() {
-      localStorage.setItem(key, "used");
+    // Save reward
+    async function saveReward() {
+      if (!code) return;
+      if (disabled) { alert("QR already used!"); return; }
 
-      document.getElementById("status").innerHTML = "<div class='success'>Claimed Successfully ✔</div>";
-      document.getElementById("claimBtn").style.display = "none";
+      const updates = {};
+      const newBalance = balance + reward;
+      updates[userPath + "/balance"] = newBalance;
+      updates[disablePath] = true;
+
+      try {
+        await db.ref().update(updates);
+        alert("Saved! New Balance: " + newBalance);
+        document.getElementById("status").textContent = "✔ Saved Successfully!";
+        document.getElementById("saveBtn").disabled = true;
+        document.getElementById("saveBtn").style.opacity = 0.5;
+      } catch(e) { alert("Error saving reward."); }
+    }
+
+    // Generate new QR (redirect to generator)
+    function generateNew() {
+      window.location.href = "generator.html";
     }
   </script>
 
