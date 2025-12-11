@@ -1,52 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coupon Code</title>
+    <title>QR Scanner</title>
+
+    <!-- QR Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background: #f5f5f5;
+            font-family: system-ui, Arial;
+            text-align: center;
+            padding: 20px;
+            background: #f3f4f7;
         }
-        #coupon {
-            font-size: 58px;
-            font-weight: bold;
-            letter-spacing: 5px;
-            color: #007bff;
+        #reader {
+            width: 300px;
+            margin: auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        #resultBox {
             margin-top: 20px;
-            display: none;
-        }
-        #msg {
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: 6px;
         }
     </style>
 </head>
 <body>
 
-    <div id="msg">Fetching Coupon...</div>
-    <div id="coupon"></div>
+    <h2>Scan QR Code</h2>
+
+    <div id="reader"></div>
+
+    <div id="resultBox">------</div>
 
     <script>
-        // Get "?code=123456" from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get("code");
+        function onScanSuccess(decodedText, decodedResult) {
+            document.getElementById("resultBox").textContent = decodedText;
 
-        if (code) {
-            document.getElementById("msg").innerText = "Your Coupon Code";
-            document.getElementById("coupon").innerText = code;
-            document.getElementById("coupon").style.display = "block";
-        } else {
-            document.getElementById("msg").innerText = "Invalid QR Code";
+            // stop scanning after success
+            html5QrcodeScanner.clear();
         }
+
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader",
+            { fps: 10, qrbox: 250 }
+        );
+
+        html5QrcodeScanner.render(onScanSuccess);
     </script>
 
 </body>
